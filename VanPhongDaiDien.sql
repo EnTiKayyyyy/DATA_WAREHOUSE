@@ -1,36 +1,32 @@
--- Tạo CSDL VanPhongDaiDien
-CREATE DATABASE VanPhongDaiDien;
+-- Database Creation for Representative Office
+CREATE DATABASE RepresentativeOffice;
 GO
 
-USE VanPhongDaiDien;
+USE RepresentativeOffice;
 GO
 
--- Bảng Khách hàng
-CREATE TABLE KhachHang (
-    MaKH              INT           NOT NULL,
-    TenKH             NVARCHAR(100) NOT NULL,
-    MaThanhPho        INT           NOT NULL,
-    NgayDatHangDauTien DATE         NULL,
-    CONSTRAINT PK_KhachHang PRIMARY KEY (MaKH)
+-- Customer Table
+CREATE TABLE Customer (
+    CustomerID INT PRIMARY KEY,
+    CustomerName VARCHAR(100) NOT NULL,
+    CityID INT NOT NULL,
+    FirstOrderDate DATE
 );
 
--- Bảng Khách hàng du lịch
-CREATE TABLE KhachHangDuLich (
-    MaKH              INT           NOT NULL,
-    HuongDanVien      NVARCHAR(100) NOT NULL,
-    ThoiGian          DATETIME      NULL,
-    CONSTRAINT PK_KhachHangDuLich PRIMARY KEY (MaKH),
-    CONSTRAINT FK_KhachHangDuLich_MaKH 
-        FOREIGN KEY (MaKH) REFERENCES KhachHang(MaKH)
+-- Tourist Customer Table
+CREATE TABLE TouristCustomer (
+    CustomerID INT,
+    TourGuide VARCHAR(100),
+    TimeStamp DATETIME,
+    PRIMARY KEY (CustomerID, TimeStamp),
+    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID)
 );
 
--- Bảng Khách hàng bưu điện
-CREATE TABLE KhachHangBuuDien (
-    MaKH              INT           NOT NULL,
-    DiaChiBuuDien     NVARCHAR(200) NOT NULL,
-    ThoiGian          DATETIME      NULL,
-    CONSTRAINT PK_KhachHangBuuDien PRIMARY KEY (MaKH),
-    CONSTRAINT FK_KhachHangBuuDien_MaKH 
-        FOREIGN KEY (MaKH) REFERENCES KhachHang(MaKH)
+-- Mail Order Customer Table
+CREATE TABLE MailOrderCustomer (
+    CustomerID INT,
+    PostalAddress VARCHAR(200),
+    TimeStamp DATETIME,
+    PRIMARY KEY (CustomerID, TimeStamp),
+    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID)
 );
-
