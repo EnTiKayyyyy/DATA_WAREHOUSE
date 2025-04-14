@@ -1,9 +1,7 @@
 -- Database Creation for Representative Office
 CREATE DATABASE RepresentativeOffice;
-GO
 
 USE RepresentativeOffice;
-GO
 
 -- Customer Table
 CREATE TABLE Customer (
