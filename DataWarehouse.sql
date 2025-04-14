@@ -147,7 +147,7 @@ SELECT
     (SELECT SUM(od.QuantityOrdered * od.UnitPrice) 
      FROM Sales.dbo.OrderDetail od 
      WHERE od.OrderID = o.OrderID) AS TotalAmount
-FROM Sales.dbo.[Order] o
+FROM Sales.dbo.`Order` o
 WHERE EXISTS (SELECT 1 FROM Dim_Date WHERE FullDate = o.OrderDate);
 
 -- Populate Fact_OrderDetail
