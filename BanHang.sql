@@ -1,9 +1,7 @@
 -- Database Creation for Sales
 CREATE DATABASE Sales;
-GO
 
 USE Sales;
-GO
 
 -- Representative Office Table
 CREATE TABLE RepresentativeOffice (
@@ -45,11 +43,11 @@ CREATE TABLE Inventory (
 );
 
 -- Order Table
-CREATE TABLE [Order] (
+CREATE TABLE `Order` (
     OrderID INT PRIMARY KEY,
     OrderDate DATE,
     CustomerID INT,
-    FOREIGN KEY (CustomerID) REFERENCES RepresentativeOffice.dbo.Customer(CustomerID)
+    FOREIGN KEY (CustomerID) REFERENCES RepresentativeOffice.Customer(CustomerID)
 );
 
 -- Order Detail Table
@@ -60,6 +58,6 @@ CREATE TABLE OrderDetail (
     UnitPrice DECIMAL(10,2),
     TimeStamp DATETIME,
     PRIMARY KEY (OrderID, ProductID),
-    FOREIGN KEY (OrderID) REFERENCES [Order](OrderID),
+    FOREIGN KEY (OrderID) REFERENCES `Order`(OrderID),
     FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
 );
