@@ -1,8 +1,7 @@
 -- 1. Create Data Warehouse Database
 CREATE DATABASE DataWarehouse;
-GO
+
 USE DataWarehouse;
-GO
 
 -- 2. Create Dimension Tables
 
