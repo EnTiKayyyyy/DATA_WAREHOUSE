@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from '../components/DataTable';
 import TimeHierarchyFilter from '../components/TimeHierarchyFilter';
+import StoreHierarchyFilter from '../components/StoreHierarchyFilter';
 import DimensionFilter from '../components/DimensionFilter';
 import PivotControl from '../components/PivotControl';
 import { Database } from 'lucide-react';
@@ -15,13 +16,14 @@ const InventoryCube: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number | undefined>(2024);
   const [selectedQuarter, setSelectedQuarter] = useState<number | undefined>();
   const [selectedMonth, setSelectedMonth] = useState<number | undefined>();
-  const [operation, setOperation] = useState<'drill-down' | 'roll-up'>('drill-down');
+  const [timeOperation, setTimeOperation] = useState<'drill-down' | 'roll-up'>('drill-down');
 
   // State for store hierarchy
   const [storeLevel, setStoreLevel] = useState<StoreLevel>('state');
   const [selectedState, setSelectedState] = useState<string>();
   const [selectedCity, setSelectedCity] = useState<string>();
   const [selectedStore, setSelectedStore] = useState<string>();
+  const [storeOperation, setStoreOperation] = useState<'drill-down' | 'roll-up'>('drill-down');
 
   // State for dimensions (slice & dice)
   const [selectedDimensions, setSelectedDimensions] = useState<Record<string, string | null>>({});
@@ -106,7 +108,16 @@ const InventoryCube: React.FC = () => {
     });
     
     setFilteredData(filtered);
-  }, [data, selectedYear, selectedQuarter, selectedMonth, selectedState, selectedCity, selectedStore, selectedDimensions]);
+  }, [
+    data,
+    selectedYear,
+    selectedQuarter,
+    selectedMonth,
+    selectedState,
+    selectedCity,
+    selectedStore,
+    selectedDimensions
+  ]);
 
   if (loading) {
     return <div className="flex items-center justify-center h-screen">Loading...</div>;
@@ -116,11 +127,11 @@ const InventoryCube: React.FC = () => {
     return <div className="text-red-500 text-center p-4">{error}</div>;
   }
 
-  // Handle time level changes for drill-down and roll-up
+  // Handle time level changes
   const handleTimeLevelChange = (level: TimeLevel) => {
     setTimeLevel(level);
     
-    if (operation === 'drill-down') {
+    if (timeOperation === 'drill-down') {
       if (level === 'year') {
         setSelectedQuarter(undefined);
         setSelectedMonth(undefined);
@@ -143,7 +154,7 @@ const InventoryCube: React.FC = () => {
   const handleStoreLevelChange = (level: StoreLevel) => {
     setStoreLevel(level);
     
-    if (operation === 'drill-down') {
+    if (storeOperation === 'drill-down') {
       if (level === 'state') {
         setSelectedCity(undefined);
         setSelectedStore(undefined);
@@ -199,33 +210,33 @@ const InventoryCube: React.FC = () => {
     ];
     
     const timeColumns = [];
-    if (timeLevel === 'year' || operation === 'roll-up') {
+    if (timeLevel === 'year' || timeOperation === 'roll-up') {
       timeColumns.push({ key: 'Year', label: 'Year' });
     }
     
     if ((timeLevel === 'quarter' || timeLevel === 'month') && 
-        (operation === 'drill-down' || timeLevel !== 'year')) {
+        (timeOperation === 'drill-down' || timeLevel !== 'year')) {
       timeColumns.push({ key: 'Quarter', label: 'Quarter' });
     }
     
     if (timeLevel === 'month' && 
-        (operation === 'drill-down' || timeLevel === 'month')) {
+        (timeOperation === 'drill-down' || timeLevel === 'month')) {
       timeColumns.push({ key: 'Month', label: 'Month' });
     }
 
     // Add store hierarchy columns
     const storeColumns = [];
-    if (storeLevel === 'state' || operation === 'roll-up') {
+    if (storeLevel === 'state' || storeOperation === 'roll-up') {
       storeColumns.push({ key: 'State', label: 'State' });
     }
     
     if ((storeLevel === 'city' || storeLevel === 'store') && 
-        (operation === 'drill-down' || storeLevel !== 'state')) {
+        (storeOperation === 'drill-down' || storeLevel !== 'state')) {
       storeColumns.push({ key: 'CityName', label: 'City' });
     }
     
     if (storeLevel === 'store' && 
-        (operation === 'drill-down' || storeLevel === 'store')) {
+        (storeOperation === 'drill-down' || storeLevel === 'store')) {
       storeColumns.push({ key: 'StoreID', label: 'Store ID' });
     }
     
@@ -246,7 +257,7 @@ const InventoryCube: React.FC = () => {
         </div>
       </div>
 
-      {/* Time Hierarchy Filter (Drill-down / Roll-up) */}
+      {/* Time Hierarchy Filter */}
       <TimeHierarchyFilter
         level={timeLevel}
         onLevelChange={handleTimeLevelChange}
@@ -257,11 +268,14 @@ const InventoryCube: React.FC = () => {
         onQuarterChange={setSelectedQuarter}
         onMonthChange={setSelectedMonth}
         years={years}
-        operation={operation}
-        onOperationChange={setOperation}
-        showStoreHierarchy={true}
-        storeLevel={storeLevel}
-        onStoreLevelChange={handleStoreLevelChange}
+        operation={timeOperation}
+        onOperationChange={setTimeOperation}
+      />
+
+      {/* Store Hierarchy Filter */}
+      <StoreHierarchyFilter
+        level={storeLevel}
+        onLevelChange={handleStoreLevelChange}
         states={states}
         cities={cities}
         stores={stores}
@@ -271,6 +285,8 @@ const InventoryCube: React.FC = () => {
         onStateChange={setSelectedState}
         onCityChange={setSelectedCity}
         onStoreChange={setSelectedStore}
+        operation={storeOperation}
+        onOperationChange={setStoreOperation}
       />
 
       {/* Dimension Filter (Slice & Dice) */}
