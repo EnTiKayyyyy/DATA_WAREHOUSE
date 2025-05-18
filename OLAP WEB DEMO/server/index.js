@@ -2,7 +2,6 @@ import express from 'express';
 import mysql from 'mysql2/promise';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import schedule from 'node-schedule';
 
 dotenv.config();
 
@@ -76,29 +75,7 @@ app.get('/api/store-product-orders', async (req, res) => {
   }
 });
 
-// Endpoint để gọi stored procedure RefreshMaterializedTables
-app.post('/api/refresh-data', async (req, res) => {
-  try {
-    await pool.query('CALL RefreshMaterializedTables()');
-    res.json({ success: true, message: 'Dữ liệu đã được cập nhật thành công' });
-  } catch (error) {
-    console.error('Lỗi khi cập nhật dữ liệu:', error);
-    res.status(500).json({ error: 'Lỗi server khi cập nhật dữ liệu' });
-  }
-});
-
 const PORT = process.env.PORT || 3000;
-
-schedule.scheduleJob('0 1 * * *', async () => {
-  try {
-    console.log('Đang cập nhật dữ liệu tự động...');
-    await pool.query('CALL RefreshMaterializedTables()');
-    console.log('Cập nhật dữ liệu tự động thành công');
-  } catch (error) {
-    console.error('Lỗi khi tự động cập nhật dữ liệu:', error);
-  }
-});
-
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

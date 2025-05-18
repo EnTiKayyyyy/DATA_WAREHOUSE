@@ -7,6 +7,7 @@ import { Database } from 'lucide-react';
 import { api } from '../services/api';
 
 type TimeLevel = 'year' | 'quarter' | 'month';
+type StoreLevel = 'state' | 'city' | 'store';
 
 const InventoryCube: React.FC = () => {
   // State for time hierarchy
@@ -15,6 +16,12 @@ const InventoryCube: React.FC = () => {
   const [selectedQuarter, setSelectedQuarter] = useState<number | undefined>();
   const [selectedMonth, setSelectedMonth] = useState<number | undefined>();
   const [operation, setOperation] = useState<'drill-down' | 'roll-up'>('drill-down');
+
+  // State for store hierarchy
+  const [storeLevel, setStoreLevel] = useState<StoreLevel>('state');
+  const [selectedState, setSelectedState] = useState<string>();
+  const [selectedCity, setSelectedCity] = useState<string>();
+  const [selectedStore, setSelectedStore] = useState<string>();
 
   // State for dimensions (slice & dice)
   const [selectedDimensions, setSelectedDimensions] = useState<Record<string, string | null>>({});
@@ -45,6 +52,20 @@ const InventoryCube: React.FC = () => {
     fetchData();
   }, []);
 
+  // Get unique values for store hierarchy
+  const states = Array.from(new Set(data.map(item => item.State))).sort();
+  const cities = Array.from(new Set(data
+    .filter(item => !selectedState || item.State === selectedState)
+    .map(item => item.CityName)
+  )).sort();
+  const stores = Array.from(new Set(data
+    .filter(item => 
+      (!selectedState || item.State === selectedState) &&
+      (!selectedCity || item.CityName === selectedCity)
+    )
+    .map(item => item.StoreID)
+  )).sort();
+
   // Update filtered data based on selections
   useEffect(() => {
     if (!data.length) return;
@@ -63,6 +84,19 @@ const InventoryCube: React.FC = () => {
         }
       }
     }
+
+    // Filter by store hierarchy
+    if (selectedState) {
+      filtered = filtered.filter(item => item.State === selectedState);
+      
+      if (selectedCity) {
+        filtered = filtered.filter(item => item.CityName === selectedCity);
+        
+        if (selectedStore) {
+          filtered = filtered.filter(item => item.StoreID === selectedStore);
+        }
+      }
+    }
     
     // Apply dimension filters (slice & dice)
     Object.entries(selectedDimensions).forEach(([dimension, value]) => {
@@ -72,7 +106,7 @@ const InventoryCube: React.FC = () => {
     });
     
     setFilteredData(filtered);
-  }, [data, selectedYear, selectedQuarter, selectedMonth, selectedDimensions]);
+  }, [data, selectedYear, selectedQuarter, selectedMonth, selectedState, selectedCity, selectedStore, selectedDimensions]);
 
   if (loading) {
     return <div className="flex items-center justify-center h-screen">Loading...</div>;
@@ -87,7 +121,6 @@ const InventoryCube: React.FC = () => {
     setTimeLevel(level);
     
     if (operation === 'drill-down') {
-      // For drill-down, reset lower levels when changing level
       if (level === 'year') {
         setSelectedQuarter(undefined);
         setSelectedMonth(undefined);
@@ -95,7 +128,6 @@ const InventoryCube: React.FC = () => {
         setSelectedMonth(undefined);
       }
     } else {
-      // For roll-up, set all levels up to the selected one
       if (level === 'year') {
         // Already at year level
       } else if (level === 'quarter') {
@@ -103,6 +135,29 @@ const InventoryCube: React.FC = () => {
       } else if (level === 'month') {
         if (!selectedQuarter) setSelectedQuarter(1);
         if (!selectedMonth) setSelectedMonth(1);
+      }
+    }
+  };
+
+  // Handle store level changes
+  const handleStoreLevelChange = (level: StoreLevel) => {
+    setStoreLevel(level);
+    
+    if (operation === 'drill-down') {
+      if (level === 'state') {
+        setSelectedCity(undefined);
+        setSelectedStore(undefined);
+      } else if (level === 'city') {
+        setSelectedStore(undefined);
+      }
+    } else {
+      if (level === 'state') {
+        // Already at state level
+      } else if (level === 'city') {
+        if (!selectedCity && cities.length > 0) setSelectedCity(cities[0]);
+      } else if (level === 'store') {
+        if (!selectedCity && cities.length > 0) setSelectedCity(cities[0]);
+        if (!selectedStore && stores.length > 0) setSelectedStore(stores[0]);
       }
     }
   };
@@ -157,8 +212,24 @@ const InventoryCube: React.FC = () => {
         (operation === 'drill-down' || timeLevel === 'month')) {
       timeColumns.push({ key: 'Month', label: 'Month' });
     }
+
+    // Add store hierarchy columns
+    const storeColumns = [];
+    if (storeLevel === 'state' || operation === 'roll-up') {
+      storeColumns.push({ key: 'State', label: 'State' });
+    }
     
-    return [...timeColumns, ...baseColumns];
+    if ((storeLevel === 'city' || storeLevel === 'store') && 
+        (operation === 'drill-down' || storeLevel !== 'state')) {
+      storeColumns.push({ key: 'CityName', label: 'City' });
+    }
+    
+    if (storeLevel === 'store' && 
+        (operation === 'drill-down' || storeLevel === 'store')) {
+      storeColumns.push({ key: 'StoreID', label: 'Store ID' });
+    }
+    
+    return [...timeColumns, ...storeColumns, ...baseColumns];
   };
 
   return (
@@ -188,6 +259,18 @@ const InventoryCube: React.FC = () => {
         years={years}
         operation={operation}
         onOperationChange={setOperation}
+        showStoreHierarchy={true}
+        storeLevel={storeLevel}
+        onStoreLevelChange={handleStoreLevelChange}
+        states={states}
+        cities={cities}
+        stores={stores}
+        selectedState={selectedState}
+        selectedCity={selectedCity}
+        selectedStore={selectedStore}
+        onStateChange={setSelectedState}
+        onCityChange={setSelectedCity}
+        onStoreChange={setSelectedStore}
       />
 
       {/* Dimension Filter (Slice & Dice) */}
@@ -199,7 +282,7 @@ const InventoryCube: React.FC = () => {
 
       {/* Pivot Control */}
       <PivotControl
-        dimensions={['CityName', 'ProductDescription']}
+        dimensions={['State', 'CityName', 'StoreID', 'ProductDescription']}
         rows={rowDimension}
         columns={columnDimension}
         onRowsChange={setRowDimension}
