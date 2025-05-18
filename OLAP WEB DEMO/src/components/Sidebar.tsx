@@ -8,8 +8,8 @@ const Sidebar: React.FC = () => {
     { path: '/inventory', name: 'Inventory Cube', icon: <Database className="w-5 h-5" /> },
     { path: '/orders', name: 'Order Cube', icon: <ShoppingCart className="w-5 h-5" /> },
     { path: '/order-details', name: 'Order Detail Cube', icon: <BarChart3 className="w-5 h-5" /> },
-    { path: '/customer-types', name: 'Customer Type Cube', icon: <Users className="w-5 h-5" /> },
-    { path: '/store-product-orders', name: 'Store Product Order Cube', icon: <Store className="w-5 h-5" /> },
+    // { path: '/customer-types', name: 'Customer Type Cube', icon: <Users className="w-5 h-5" /> },
+    // { path: '/store-product-orders', name: 'Store Product Order Cube', icon: <Store className="w-5 h-5" /> },
   ];
 
   return (

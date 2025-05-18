@@ -48,17 +48,15 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [inventory, orders, orderDetails, customers] = await Promise.all([
+        const [inventory, orders, orderDetails] = await Promise.all([
           api.getInventoryCube(),
           api.getOrderCube(),
           api.getOrderDetailCube(),
-          api.getCustomerTypeCube()
         ]);
 
         setInventoryData(inventory);
         setOrderData(orders);
         setOrderDetailData(orderDetails);
-        setCustomerData(customers);
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch dashboard data');

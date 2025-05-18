@@ -20,7 +20,7 @@ const OrderDetailCube: React.FC = () => {
   const [selectedDimensions, setSelectedDimensions] = useState<Record<string, string | null>>({});
 
   // State for pivot
-  const [rowDimension, setRowDimension] = useState<string>('ProductDescription');
+  const [rowDimension, setRowDimension] = useState<string>('ProductID');
   const [columnDimension, setColumnDimension] = useState<string>('CustomerName');
 
   // State for data
@@ -123,8 +123,8 @@ const OrderDetailCube: React.FC = () => {
   // Sample dimensions for filtering
   const dimensions = [
     {
-      name: 'ProductDescription',
-      values: getDimensionValues('ProductDescription')
+      name: 'ProductID',
+      values: getDimensionValues('ProductID')
     },
     {
       name: 'CustomerName',
@@ -200,7 +200,7 @@ const OrderDetailCube: React.FC = () => {
 
       {/* Pivot Control */}
       <PivotControl
-        dimensions={['ProductDescription', 'CustomerName']}
+        dimensions={['ProductID', 'CustomerName']}
         rows={rowDimension}
         columns={columnDimension}
         onRowsChange={setRowDimension}

@@ -30,7 +30,7 @@ const InventoryCube: React.FC = () => {
 
   // State for pivot
   const [rowDimension, setRowDimension] = useState<string>('CityName');
-  const [columnDimension, setColumnDimension] = useState<string>('ProductDescription');
+  const [columnDimension, setColumnDimension] = useState<string>('ProductID');
 
   // State for data
   const [data, setData] = useState<any[]>([]);
@@ -193,8 +193,8 @@ const InventoryCube: React.FC = () => {
       values: getDimensionValues('CityName')
     },
     {
-      name: 'ProductDescription',
-      values: getDimensionValues('ProductDescription')
+      name: 'ProductID',
+      values: getDimensionValues('ProductID')
     }
   ];
   
@@ -298,7 +298,7 @@ const InventoryCube: React.FC = () => {
 
       {/* Pivot Control */}
       <PivotControl
-        dimensions={['State', 'CityName', 'StoreID', 'ProductDescription']}
+        dimensions={['State', 'CityName', 'StoreID', 'ProductID']}
         rows={rowDimension}
         columns={columnDimension}
         onRowsChange={setRowDimension}
