@@ -143,7 +143,7 @@ const Dashboard: React.FC = () => {
           icon={<ShoppingCart className="w-6 h-6 text-green-600" />}
           color="bg-green-100"
         />
-        <DashboardMetric
+        {/* <DashboardMetric
           title="Total Revenue"
           value={`$${totalRevenue.toLocaleString()}`}
           description="Generated revenue"
@@ -156,7 +156,7 @@ const Dashboard: React.FC = () => {
           description="Active customers"
           icon={<Users className="w-6 h-6 text-yellow-600" />}
           color="bg-yellow-100"
-        />
+        /> */}
       </div>
 
       <TabGroup>
@@ -181,7 +181,7 @@ const Dashboard: React.FC = () => {
                 />
               </Card>
               
-              <Card>
+              {/* <Card>
                 <Title>Orders by Customer Type</Title>
                 <DonutChart
                   data={orderChartData}
@@ -190,7 +190,7 @@ const Dashboard: React.FC = () => {
                   colors={["emerald", "violet", "indigo"]}
                   className="h-72"
                 />
-              </Card>
+              </Card> */}
             </div>
           </TabPanel>
           
@@ -263,14 +263,14 @@ const Dashboard: React.FC = () => {
         </Link>
 
         <Link
-          to="/customer-types"
+          to="/order-details"
           className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
         >
           <div className="flex items-center gap-4">
             <Users className="w-8 h-8 text-yellow-600" />
             <div>
-              <h3 className="text-lg font-semibold">Customer Segments</h3>
-              <p className="text-gray-600 dark:text-gray-400">Customer type analysis and behavior</p>
+              <h3 className="text-lg font-semibold">Order Details</h3>
+              <p className="text-gray-600 dark:text-gray-400">Order Details</p>
             </div>
           </div>
         </Link>
